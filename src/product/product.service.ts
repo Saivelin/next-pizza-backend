@@ -40,6 +40,7 @@ export class ProductService {
         const n = Number(get) * Number(page)
 
         let response
+        let count
 
         if(tags){
             response = await this.prisma.products.findMany({
@@ -57,6 +58,17 @@ export class ProductService {
                 skip: Number(n),
                 include: {tag: true, volume: true}
             })
+            count = await this.prisma.products.count({
+                where: {
+                    tag: {
+                        some: {
+                            id: {
+                                in: [...tags]
+                            }
+                        }
+                    }
+                },
+            })
         }
         else{
             response = await this.prisma.products.findMany({
@@ -65,10 +77,11 @@ export class ProductService {
                 skip: Number(n),
                 include: {tag: true, volume: true}
             })
+            count = await this.prisma.products.count()
         }
 
         if (response.length > 0) {
-            return response
+            return {count: count, products: response}
         } else {
             return `Page number ${page} does not exist`
         }
