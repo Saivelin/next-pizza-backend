@@ -7,7 +7,7 @@ export class TagService {
     constructor(private prisma: PrismaService){}
 
     getAll(){
-        return this.prisma.tags.findMany()
+        return this.prisma.tags.findMany({include: {product: true}})
     }
 
     create(dto: TagDto){

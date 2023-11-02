@@ -30,7 +30,7 @@ export class ProductService {
         })
     }
 
-    async findAll(get: number, page: number) {
+    async findAll(get: number, page: number, tags?: number[]) {
         try {
             Number(get)
             Number(page)
@@ -39,12 +39,33 @@ export class ProductService {
         }
         const n = Number(get) * Number(page)
 
-        let response = await this.prisma.products.findMany({
-            orderBy: { id: 'desc' },
-            take: Number(get),
-            skip: Number(n),
-            include: {tag: true, volume: true}
-        })
+        let response
+
+        if(tags){
+            response = await this.prisma.products.findMany({
+                where: {
+                    tag: {
+                        some: {
+                            id: {
+                                in: [...tags]
+                            }
+                        }
+                    }
+                },
+                orderBy: { id: 'desc' },
+                take: Number(get),
+                skip: Number(n),
+                include: {tag: true, volume: true}
+            })
+        }
+        else{
+            response = await this.prisma.products.findMany({
+                orderBy: { id: 'desc' },
+                take: Number(get),
+                skip: Number(n),
+                include: {tag: true, volume: true}
+            })
+        }
 
         if (response.length > 0) {
             return response

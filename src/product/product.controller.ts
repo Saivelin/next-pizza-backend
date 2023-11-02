@@ -21,7 +21,18 @@ export class ProductController {
         if(!query.get || !query.page){
             return "Missing params get or page"
         }
-        return this.productService.findAll(query.get, query.page);
+        let tags = undefined
+        if(query.tags){
+            try{
+                tags = JSON.parse(query.tags).map((el)=>{
+                    return Number(el)
+                })
+            }
+            catch{
+                return `Tags is not number[]`
+            }
+        }
+        return this.productService.findAll(query.get, query.page, tags);
     }
 
   @Get(':id')
