@@ -101,4 +101,8 @@ export class ProductService {
             return `Product with id ${id} does not exist`
         }
     }
+
+    removeAll(){
+        return this.prisma.products.deleteMany()
+    }
 }
